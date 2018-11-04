@@ -14,6 +14,7 @@ public class GameSimulation implements Callable<String> {
     public byte[] bytes;
     private String Winner="";
     public boolean Saved=false;
+    public boolean interupted=false;
     ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
     DataOutputStream dataOut = new DataOutputStream(byteOut);
 
