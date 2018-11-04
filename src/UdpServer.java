@@ -220,7 +220,7 @@ public class UdpServer extends Thread {
 
                     sendDatatoAllClients(bytes,game.get(CurrentGame));
                     System.out.println("Disconnected");
-
+                    game.get(CurrentGame).interupted=true;
                     f.get(CurrentGame).cancel(true);
                     if(f.size()==0)
                     {
@@ -259,7 +259,7 @@ public class UdpServer extends Thread {
                     sendDatatoAllClients(bytes,game.get(CurrentGame));
                     if (f.get(CurrentGame).isDone()) {
                         try {
-                            if(game.get(CurrentGame).Saved==false) {
+                            if(game.get(CurrentGame).Saved==false&& game.get(CurrentGame).interupted==false) {
                                 BufferedWriter writer = new BufferedWriter(new FileWriter("Results.txt", true));
                                 writer.append(f.get(CurrentGame).get());
                                 writer.newLine();
