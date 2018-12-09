@@ -36,7 +36,7 @@ public class GameSimulation implements Callable<String> {
             if (colision() == false) {
                 return Winner;
             }
-            Thread.sleep(1);
+            Thread.sleep(5);
 
 
         }
