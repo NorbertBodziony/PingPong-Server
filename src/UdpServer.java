@@ -292,7 +292,11 @@ public class UdpServer extends Thread {
                         sendDatatoAllClients(bytes,game.get(CurrentGame));
                         System.out.println("Game OVER  " + CurrentGame);
                         f.get(CurrentGame).cancel(true);
-                        SendScoreboard(game.get(CurrentGame));
+                        try {
+                            SendScoreboard(game.get(CurrentGame));
+                        } catch (SQLException e1) {
+                            e1.printStackTrace();
+                        }
                         if(f.size()==0)
                         {
                             stan=0;
@@ -345,16 +349,24 @@ public class UdpServer extends Thread {
         }
         return results;
     }
-    public void SendScoreboard(GameSimulation game)
-    {
+    public void SendScoreboard(GameSimulation game) throws SQLException {
         ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
         DataOutputStream dataOut = new DataOutputStream(byteOut);
-        Map<String, Integer> results=results();
-
+        Map<String, Integer> results=DataBase.GetResults(connection);
+        int resultsize;
         try {
             dataOut.writeInt(10);
-            dataOut.writeInt(results.size());
-            for (int i = 0; i < results.size(); i++)
+            if(results.size()>10)
+            {
+               resultsize=10;
+            }
+            else
+            {
+                resultsize=results.size();
+
+            }
+            dataOut.writeInt(resultsize);
+            for (int i = 0; i < resultsize; i++)
             {Object myKey = results.keySet().toArray()[i];
 
              int myValue = results.get(myKey);

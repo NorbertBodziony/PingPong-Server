@@ -1,8 +1,5 @@
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 
 import java.sql.SQLException;
@@ -55,7 +52,7 @@ public class DataBase {
 
             InsertPlayer(connection,"hello12");
            // InsertGame(connection,1,2,-1);
-
+            System.out.println(GetResults(connection));
           connection.close();
 
         }catch (Exception e) {
@@ -140,5 +137,17 @@ public class DataBase {
         pstmt.executeUpdate();
     }
 
+    public static Map<String, Integer> GetResults(Connection con) throws SQLException {
+        Statement st = con.createStatement();
+        String s1 = ("SELECT player.name,COUNT(*) FROm game join player ON (player.id=game.Player1 OR player.id=game.Player2) WHERE game.result=name GROUP by name");
+       ResultSet rs= st.executeQuery(s1);
+        Map<String, Integer> results=new HashMap<>();
+       while(rs.next())
+       {
+           results.put(rs.getString(1),rs.getInt(2));
+       }
+
+        return results;
+    }
 
 }
