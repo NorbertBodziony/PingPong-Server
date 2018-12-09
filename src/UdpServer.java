@@ -228,6 +228,12 @@ public class UdpServer extends Thread {
                     sendDatatoAllClients(bytes,game.get(CurrentGame));
                     System.out.println("Disconnected");
                     game.get(CurrentGame).interupted=true;
+                    try {
+                        DataBase.InsertGame(connection,game.get(CurrentGame).P1.Name,game.get(CurrentGame).P2.Name,"Interupted");
+                    } catch (SQLException e1) {
+                        e1.printStackTrace();
+                    }
+
                     f.get(CurrentGame).cancel(true);
                     if(f.size()==0)
                     {

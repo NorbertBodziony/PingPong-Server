@@ -60,6 +60,46 @@ public class DataBase {
             System.out.println("error");
         }
     }
+    public static void init()
+    {
+        try {
+            Connection connection = connect();
+
+            DatabaseMetaData dbm = connection.getMetaData();
+
+            ResultSet tables = dbm.getTables(null, null, "Player", null);
+            if (tables.next()) {
+                tables = dbm.getTables(null, null, "Game", null);
+                if(tables.next())
+                {
+                    System.out.println("database exist");
+                }
+                else
+                {
+                    String  sql = ("Create table Game(id INT PRIMARY KEY,Player1 int,Player2 int,result INT,FOREIGN KEY (Player1) REFERENCES Player(id),FOREIGN KEY (Player2) REFERENCES Player(id))");
+                    PreparedStatement  pstmt = connection.prepareStatement(sql);
+                    pstmt.executeUpdate();
+                }
+            }
+            else {
+                String sql = ("Create table Player(id INT PRIMARY KEY,name varchar(20))");
+                PreparedStatement pstmt = connection.prepareStatement(sql);
+                pstmt.executeUpdate();
+                sql = ("Create table Game(id INT PRIMARY KEY,Player1 int,Player2 int,result varchar(20),FOREIGN KEY (Player1) REFERENCES Player(id),FOREIGN KEY (Player2) REFERENCES Player(id))");
+                pstmt = connection.prepareStatement(sql);
+                pstmt.executeUpdate();
+            }
+
+            InsertPlayer(connection,"hello12");
+            // InsertGame(connection,1,2,-1);
+            System.out.println(GetResults(connection));
+            connection.close();
+
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("error");
+        }
+    }
     public static boolean loadDriver() {
         try {
             Class.forName(driver);
