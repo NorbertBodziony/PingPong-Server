@@ -1,5 +1,7 @@
 import java.io.*;
 import java.net.*;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -21,6 +23,7 @@ public class UdpServer extends Thread {
     public static ArrayList<GameSimulation> game = new ArrayList<>();
     public static ArrayList<FutureTask<String>> f = new ArrayList<>();
     private int GameNumber = 0;
+    Connection connection;
     Map<String, Integer> results = new HashMap<>();
 
     public UdpServer()
@@ -29,6 +32,7 @@ public class UdpServer extends Thread {
 
         try {
             this.socket = new DatagramSocket(1331);
+            this.connection = DataBase.connect();
 
         } catch (SocketException e) {
             e.printStackTrace();
@@ -113,13 +117,16 @@ public class UdpServer extends Thread {
                         while (namesie>0){
                         players.get(PlayerCounter).Name+=dataIn.readChar();
                         namesie--;}
+                        DataBase.InsertPlayer(connection,players.get(PlayerCounter).Name);
                         width = dataIn.readInt();
                         height = dataIn.readInt();
                         System.out.println(players.get(PlayerCounter));
                     } catch (IOException e) {
                         e.printStackTrace();
+                    } catch (SQLException e1) {
+                        e1.printStackTrace();
                     }
-                    players.get(PlayerCounter).ipAddress = packet.getAddress();
+                players.get(PlayerCounter).ipAddress = packet.getAddress();
                     players.get(PlayerCounter).socket = packet.getPort();
                     PlayerCounter++;
                     ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
@@ -260,17 +267,16 @@ public class UdpServer extends Thread {
                     if (f.get(CurrentGame).isDone()) {
                         try {
                             if(game.get(CurrentGame).Saved==false&& game.get(CurrentGame).interupted==false) {
-                                BufferedWriter writer = new BufferedWriter(new FileWriter("Results.txt", true));
+
+                               /* BufferedWriter writer = new BufferedWriter(new FileWriter("Results.txt", true));
                                 writer.append(f.get(CurrentGame).get());
                                 writer.newLine();
                                 writer.close();
+                                */
+                                DataBase.InsertGame(connection,game.get(CurrentGame).P1.Name,game.get(CurrentGame).P2.Name,f.get(CurrentGame).get());
                                 game.get(CurrentGame).Saved=true;
                             }
-                        } catch (InterruptedException e1) {
-                            e1.printStackTrace();
-                        } catch (ExecutionException e1) {
-                            e1.printStackTrace();
-                        } catch (IOException e1) {
+                        } catch (Exception e1) {
                             e1.printStackTrace();
                         }
                         byteOut = new ByteArrayOutputStream();
